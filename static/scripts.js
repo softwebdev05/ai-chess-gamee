@@ -33,7 +33,7 @@ var onSnapEnd = function() {
 };
 
 var updateStatus = function() {
-  console.log("Change")
+  
   var status = '';
 
   var moveColor = 'White';
