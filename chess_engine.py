@@ -77,12 +77,20 @@ class Engine:
     def alpha_beta(self, depth, move, alpha, beta, maximiser):
         if depth == 0:
             return move, self.material_eval()
+        moves = list(self.board.legal_moves)
+
+        if not moves:
+            if self.board.is_checkmate():
+                if self.board.result() == "1-0":
+                    return move, 1000000
+                elif self.board.result() == "0-1":
+                    return move, -1000000
+            else:
+                return move, 0
+
+        best_move = moves[0]
 
         if maximiser:
-            best_move = None
-
-            moves = list(self.board.legal_moves)
-
             for move in moves:
                 self.leaves_reached += 1
                 self.board.push(move)
@@ -96,10 +104,6 @@ class Engine:
             return best_move, alpha
 
         if not maximiser:
-            best_move = None
-
-            moves = list(self.board.legal_moves)
-
             for move in moves:
                 self.leaves_reached += 1
                 self.board.push(move)
@@ -134,6 +138,12 @@ class Engine:
         leaves = self.leaves_reached
         self.leaves_reached = 0
         return leaves
+
+
+    def order_moves(self):
+        moves = self.board.legal_moves
+
+
 
 
 if __name__=="__main__":

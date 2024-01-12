@@ -3,6 +3,10 @@ var board,
   statusEl = $('#status'),
   fenEl = $('#fen'),
   pgnEl = $('#pgn');
+
+var previous_moves = []
+
+
 // do not pick up pieces if the game is over
 // only pick up pieces for the side to move
 var onDragStart = function(source, piece, position, orientation) {
@@ -24,7 +28,7 @@ var onDrop = function(source, target) {
 
   updateStatus();
   getResponseMove();
-  console.log(game.fen())
+  console.log(previous_moves.length)
 };
 
 // update the board position after the piece snap
@@ -63,6 +67,8 @@ var updateStatus = function() {
   statusEl.html(status);
   fenEl.html(game.fen());
   pgnEl.html(game.pgn());
+  
+  previous_moves.push(game.fen())
 };
 var cfg = {
   draggable: true,
@@ -98,3 +104,11 @@ setTimeout(function() {
     board = ChessBoard('board', cfg);
     updateStatus();
 }, 0);
+
+var backOneMove = function() {
+  fen = previous_moves[previous_moves.length - 2];
+  game.load(fen)
+  board.position(game.fen());
+  previous_moves.pop();
+  console.log("Button");
+}
