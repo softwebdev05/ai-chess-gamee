@@ -88,8 +88,11 @@ var randomResponse = function() {
 }
 
 var getResponseMove = function() {
+  var e = document.getElementById("sel1");
+  var depth = e.options[e.selectedIndex].value;
+  console.log("Depth:", depth);
   fen = game.fen()
-  $.get($SCRIPT_ROOT + "/move/" + fen, function(data) {
+  $.get($SCRIPT_ROOT + "/move/" + depth + "/" + fen, function(data) {
       game.move(data, {sloppy: true});
       board.position(game.fen());
       updateStatus();
@@ -105,9 +108,6 @@ setTimeout(function() {
     updateStatus();
 }, 0);
 
-//var setPGN = function() {
-//  document.getElementById("pgn").innerHTML = game.pgn();
-//}
 
 var setPGN = function() {
   var table = document.getElementById("pgn");
@@ -120,22 +120,6 @@ var setPGN = function() {
     console.log(move);
 
 
-//  for (var i = 0; i < pgn.length; i++) {
-//     if (i % 3 == 0) {
-//        var moveNumber = pgn[i];
-//        var row = table.insertRow(0);
-//        var cell1 = row.insertCell(0);
-//        var cell2 = row.insertCell(1);
-//        var cell3 = row.insertCell(2)
-//        cell1.innerHTML = moveNumber;
-//     } else if (i % 3 == 1) {
-//        var whiteMove = pgn[i];
-//        cell2.innerHTML = whiteMove;
-//     } else if (i % 3 == 2) {
-//        var blackMove = pgn[i];
-//        cell3.innerHTML = blackMove;
-//     }
-//  }
 }
 
 var createTable = function() {
