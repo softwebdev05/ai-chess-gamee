@@ -34,7 +34,9 @@ var onDrop = function(source, target) {
 // update the board position after the piece snap
 // for castling, en passant, pawn promotion
 var onSnapEnd = function() {
-  board.position(game.fen());
+  if (game.turn() === 'w') {
+    //    board.position(game.fen());
+      }
 };
 
 var updateStatus = function() {
@@ -62,7 +64,7 @@ var updateStatus = function() {
     }
   }
   setStatus(status);
-  //  setPGN();
+
     createTable();
     updateScroll();
   statusEl.html(status);
@@ -82,7 +84,7 @@ var randomResponse = function() {
     fen = game.fen()
     $.get($SCRIPT_ROOT + "/move/" + fen, function(data) {
         game.move(data, {sloppy: true});
-
+//        board.position(game.fen());
         updateStatus();
     })
 }
@@ -90,12 +92,15 @@ var randomResponse = function() {
 var getResponseMove = function() {
   var e = document.getElementById("sel1");
   var depth = e.options[e.selectedIndex].value;
-  
+  console.log("Depth:", depth);
   fen = game.fen()
   $.get($SCRIPT_ROOT + "/move/" + depth + "/" + fen, function(data) {
       game.move(data, {sloppy: true});
-//      board.position(game.fen());
+
       updateStatus();
+      // This is terrible and I should feel bad. Find some way to fix this properly.
+        // The animations would stutter when moves were returned too quick, so I added a 100ms delay before the animation
+        setTimeout(function(){ board.position(game.fen()); }, 100);
     })
 
 }
@@ -105,7 +110,7 @@ var getResponseMove = function() {
 // http://stackoverflow.com/questions/29493624/cant-display-board-whereas-the-id-is-same-when-i-use-chessboard-js
 setTimeout(function() {
     board = ChessBoard('board', cfg);
-    updateStatus();
+//    updateStatus();
 }, 0);
 
 
@@ -114,9 +119,7 @@ var setPGN = function() {
 
   var pgn = game.pgn().split(" ");
   console.log(pgn);
-
     var move = pgn[pgn.length - 1];
-
     console.log(move);
 
 
@@ -147,9 +150,6 @@ var createTable = function() {
             }
         }
     }
-
-    //var data = [{moveNumber: "1.", whiteMove: "e4", blackMove: "e5"},
-    //          {moveNumber: "2.", whiteMove: "e4", blackMove: "e5"}];
 
     $('#pgn tr').not(':first').not(':last').remove();
     var html = '';
