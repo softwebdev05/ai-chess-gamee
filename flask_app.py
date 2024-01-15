@@ -18,6 +18,7 @@ def get_move(depth, fen):
     print()
     return move
 
+
 @app.route('/test/<string:tester>')
 def test_get(tester):
     return tester

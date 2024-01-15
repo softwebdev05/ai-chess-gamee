@@ -21,7 +21,7 @@ class Engine:
             # queen
             5:900,
             # king
-                        6:99999
+            6:99999
         }
         self.square_table = square_table = {
             1: [
@@ -87,7 +87,6 @@ class Engine:
         }
         self.board.set_fen(fen)
         self.leaves_reached = 0
-        
 
 
     def random_response(self):
@@ -103,7 +102,8 @@ class Engine:
             score -= len(self.board.pieces(i, chess.BLACK)) * self.piece_values[i]
 
         return score
-      
+
+
     def position_eval(self):
         score = 0
         # iterate through the pieces
@@ -120,7 +120,6 @@ class Engine:
                 score -= self.square_table[i][square]
 
         return score
-
 
 
 
@@ -160,7 +159,8 @@ class Engine:
                 self.board.pop()
 
             return best_move, best_score
-          
+
+
     def alpha_beta(self, depth_neg, depth_pos, move, alpha, beta, prev_moves, maximiser):
 
         move_sequence = []
@@ -170,10 +170,11 @@ class Engine:
             # return move, self.material_eval()
             move_sequence.append(move)
             return move_sequence, self.position_eval()
-          
+
+
         moves = list(self.board.legal_moves)
         # moves = self.order_moves()
-        
+
         # if there are no legal moves, check for checkmate / stalemate
         if not moves:
             if self.board.is_checkmate():
@@ -202,16 +203,15 @@ class Engine:
                 moves.insert(0, prev_moves[depth_neg - 1])
 
 
-
         if maximiser:
             for move in moves:
                 self.leaves_reached += 1
-                
+
                 # get score of the new move, record what it is
                 self.board.push(move)
                 new_sequence, new_score = self.alpha_beta(depth_neg - 1, depth_pos + 1, move, alpha, beta, prev_moves, False)
                 self.board.pop()
-                
+
                 # Check whether the new score is better than the best score. If so, replace the best score.
                 if new_score > best_score:
                     move_sequence = new_sequence
@@ -234,12 +234,12 @@ class Engine:
         if not maximiser:
             for move in moves:
                 self.leaves_reached += 1
-                
+
                 # get score of the new move, record what it is
                 self.board.push(move)
                 new_sequence, new_score = self.alpha_beta(depth_neg - 1, depth_pos + 1, move, alpha, beta, prev_moves, True)
                 self.board.pop()
-                
+
                 # Check whether the new score is better than the best score. If so, replace the best score.
                 if new_score < best_score:
                     move_sequence = new_sequence
@@ -254,31 +254,30 @@ class Engine:
                 # update beta - lower bound
                 if new_score < beta:
                     beta = new_score
-                    
-                        # return the best of the results
+
+            # return the best of the results
             # self.check_against_best(best_move, best_score, depth_pos, False)
             move_sequence.append(best_move)
             return move_sequence, best_score
-
 
     def calculate_minimax(self, depth):
         # This shows up true for white & false for black
         maximiser = self.board.turn
 
         best_move, best_score = self.minimax(depth, None, maximiser)
-        
+
         return str(best_move)
 
 
     def calculate_ab(self, depth):
         maximiser = self.board.turn
-        
+
         move_sequence, best_score = self.alpha_beta(depth, 0, None, -10000001, 10000001, None, maximiser)
         for i in range(1, len(move_sequence)):
             print("move", move_sequence[-i])
         return str(move_sequence[-1])
-      
-      
+
+
     def total_leaves(self):
         leaves = self.leaves_reached
         self.leaves_reached = 0
@@ -306,16 +305,18 @@ class Engine:
         print("Depth calculated:", len(move_list))
         return str(move_list[-1])
 
+
+
 # This is being used for testing at the moment, which is why there is so much commented code.
 # Will move to a standalone testing script when I get the chance.
 if __name__=="__main__":
-    
+
     fen = "r2qkbr1/ppp1pppp/2n1b2n/8/8/5P2/PPPP2PP/RNB1KBNR b KQq - 0 6"
 
     newengine = Engine(fen)
-    
-    
-     # squares = newengine.board.pieces(1, chess.WHITE)
+
+
+    # squares = newengine.board.pieces(1, chess.WHITE)
     # for square in squares:
     #     print (square)
     # print(squares)
@@ -330,11 +331,12 @@ if __name__=="__main__":
     # print(newengine.calculate(3))
     # print(newengine.total_leaves())
     # print("Time taken:", time.time() - start_time)
+
     start_time = time.time()
     print(newengine.calculate_ab(4))
     print(newengine.total_leaves())
     print("Time taken:", time.time() - start_time)
-    
+
     start_time = time.time()
     print(newengine.iterative_deepening(4))
     print(newengine.total_leaves())
@@ -344,8 +346,4 @@ if __name__=="__main__":
     # cProfile.run('newengine.calculate_ab(3)')
 
 
-    
-    # print(newengine.board)
-
-       
     # print(newengine.board)

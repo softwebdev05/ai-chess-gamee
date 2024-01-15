@@ -5,8 +5,6 @@ var board,
   pgnEl = $('#pgn');
 
 
-
-
 // do not pick up pieces if the game is over
 // only pick up pieces for the side to move
 var onDragStart = function(source, piece, position, orientation) {
@@ -16,6 +14,7 @@ var onDragStart = function(source, piece, position, orientation) {
     return false;
   }
 };
+
 var onDrop = function(source, target) {
   // see if the move is legal
   var move = game.move({
@@ -23,54 +22,58 @@ var onDrop = function(source, target) {
     to: target,
     promotion: 'q' // NOTE: always promote to a queen for example simplicity
   });
+
   // illegal move
   if (move === null) return 'snapback';
 
   updateStatus();
   getResponseMove();
-  
 };
 
 // update the board position after the piece snap
 // for castling, en passant, pawn promotion
 var onSnapEnd = function() {
-  board.position(game.fen());
+    board.position(game.fen());
 };
 
 var updateStatus = function() {
-  
   var status = '';
 
   var moveColor = 'White';
   if (game.turn() === 'b') {
     moveColor = 'Black';
   }
+
   // checkmate?
   if (game.in_checkmate() === true) {
     status = 'Game over, ' + moveColor + ' is in checkmate.';
   }
+
   // draw?
   else if (game.in_draw() === true) {
     status = 'Game over, drawn position';
   }
+
   // game still on
   else {
     status = moveColor + ' to move';
+
     // check?
     if (game.in_check() === true) {
       status += ', ' + moveColor + ' is in check';
     }
   }
+
   setStatus(status);
   getLastCapture();
+  createTable();
+  updateScroll();
 
-    createTable();
-    updateScroll();
   statusEl.html(status);
   fenEl.html(game.fen());
   pgnEl.html(game.pgn());
-  
 };
+
 var cfg = {
   draggable: true,
   position: 'start',
@@ -83,25 +86,22 @@ var randomResponse = function() {
     fen = game.fen()
     $.get($SCRIPT_ROOT + "/move/" + fen, function(data) {
         game.move(data, {sloppy: true});
-      // board.position(game.fen());
+        // board.position(game.fen());
         updateStatus();
     })
 }
 
 var getResponseMove = function() {
-  var e = document.getElementById("sel1");
-  var depth = e.options[e.selectedIndex].value;
-  
-  fen = game.fen()
-  $.get($SCRIPT_ROOT + "/move/" + depth + "/" + fen, function(data) {
-      game.move(data, {sloppy: true});
-
-      updateStatus();
-      // This is terrible and I should feel bad. Find some way to fix this properly.
+    var e = document.getElementById("sel1");
+    var depth = e.options[e.selectedIndex].value;
+    fen = game.fen()
+    $.get($SCRIPT_ROOT + "/move/" + depth + "/" + fen, function(data) {
+        game.move(data, {sloppy: true});
+        updateStatus();
+        // This is terrible and I should feel bad. Find some way to fix this properly.
         // The animations would stutter when moves were returned too quick, so I added a 100ms delay before the animation
         setTimeout(function(){ board.position(game.fen()); }, 100);
     })
-
 }
 
 
@@ -115,13 +115,8 @@ setTimeout(function() {
 
 var setPGN = function() {
   var table = document.getElementById("pgn");
-
   var pgn = game.pgn().split(" ");
-  
   var move = pgn[pgn.length - 1];
-    
-
-
 }
 
 var createTable = function() {
@@ -151,7 +146,7 @@ var createTable = function() {
 
     $('#pgn tr').not(':first').remove();
     var html = '';
-    for (var i = 0; i < data.length; i++) {                
+    for (var i = 0; i < data.length; i++) {
         html += '<tr><td>' + data[i].moveNumber + '</td><td>'
         + data[i].whiteMove + '</td><td>'
         + data[i].blackMove + '</td></tr>';
@@ -173,31 +168,30 @@ var takeBack = function() {
     if (game.turn() != "w") {
         game.undo();
     }
-  board.position(game.fen());
-  updateStatus();
+    board.position(game.fen());
+    updateStatus();
 }
 
 var newGame = function() {
-  
-  game.reset();
-  board.start();
-  updateStatus();
+    game.reset();
+    board.start();
+    updateStatus();
 }
 
 var getCapturedPieces = function() {
-  var history = game.history({ verbose: true });
-  for (var i = 0; i < history.length; i++) {
-      if ("captured" in history[i]) {
-          console.log(history[i]["captured"]);
-      }
-  }
+    var history = game.history({ verbose: true });
+    for (var i = 0; i < history.length; i++) {
+        if ("captured" in history[i]) {
+            console.log(history[i]["captured"]);
+        }
+    }
 }
 
 var getLastCapture = function() {
-  var history = game.history({ verbose: true });
-  var index = history.length - 1;
+    var history = game.history({ verbose: true });
+    var index = history.length - 1;
 
-  if (history[index] != undefined && "captured" in history[index]) {
-      console.log(history[index]["captured"]);
-  }
+    if (history[index] != undefined && "captured" in history[index]) {
+        console.log(history[index]["captured"]);
+    }
 }
